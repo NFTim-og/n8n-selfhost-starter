@@ -1,0 +1,131 @@
+volumes:
+  db_storage:
+  n8n_storage:
+  evolution_instances:
+  redis_data:
+
+services:
+  postgres:
+    image: postgres:17
+    restart: always
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - POSTGRES_NON_ROOT_USER
+      - POSTGRES_NON_ROOT_PASSWORD
+    volumes:
+      - db_storage:/var/lib/postgresql/data
+      - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  n8n:
+    build: .
+    restart: always
+    environment:
+      # ---- Database configuration ----
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
+      # ---- External modules ----
+      - NODE_FUNCTION_ALLOW_EXTERNAL=canvas
+      - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+      # ---- Host/port configuration ----
+      - N8N_HOST=${NGROK_DOMAIN}
+      - N8N_PORT=5678
+      - NODE_ENV=production
+      # ---- ngrok configuration (optional - for external access) ----
+      - N8N_EDITOR_BASE_URL=https://${NGROK_DOMAIN}
+      - WEBHOOK_URL=https://${NGROK_DOMAIN}
+      - N8N_PROTOCOL=https
+      # ---- Canvas specific ----
+      - FONTCONFIG_PATH=/etc/fonts
+      # ---- Local configuration ----
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+    ports:
+      - 5678:5678
+    volumes:
+      - n8n_storage:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  evolution-api:
+    image: atendai/evolution-api:v2.1.1
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      # ---- Server configuration ----
+      - SERVER_URL=https://${NGROK_DOMAIN}
+      - SERVER_PORT=8080
+      - SERVER_TYPE=http
+      - DEL_INSTANCE=false
+      # ---- Database configuration ----
+      - DATABASE_ENABLED=true
+      - DATABASE_PROVIDER=postgresql
+      - DATABASE_CONNECTION_URI=${EVOLUTION_DATABASE_URI}
+      - DATABASE_SAVE_DATA_INSTANCE=true
+      - DATABASE_SAVE_DATA_NEW_MESSAGE=true
+      - DATABASE_SAVE_MESSAGE_UPDATE=true
+      - DATABASE_SAVE_DATA_CONTACTS=true
+      - DATABASE_SAVE_DATA_CHATS=true
+      - DATABASE_SAVE_DATA_LABELS=true
+      - DATABASE_SAVE_DATA_HISTORIC=true
+      - DATABASE_CONNECTION_CLIENT_NAME=evolution_v2
+      # ---- Redis configuration ----
+      - CACHE_REDIS_ENABLED=true
+      - CACHE_REDIS_URI=redis://:${REDIS_PASSWORD}@redis:6379/1
+      - CACHE_REDIS_PREFIX_KEY=evolution_v2
+      - CACHE_REDIS_SAVE_INSTANCES=true
+      - CACHE_LOCAL_ENABLED=false
+      # ---- Authentication ----
+      - AUTHENTICATION_API_KEY=${EVOLUTION_API_KEY}
+      # ---- Logs ----
+      - LOG_LEVEL=ERROR,WARN,INFO
+      - LOG_COLOR=true
+      # ---- Language ----
+      - LANGUAGE=en
+      # ---- Webhook configuration ----
+      - WEBHOOK_GLOBAL_ENABLED=false
+      # ---- WebSocket configuration ----
+      - WEBSOCKET_ENABLED=true
+      # ---- RabbitMQ configuration ----
+      - RABBITMQ_ENABLED=false
+      # ---- SQS configuration ----
+      - SQS_ENABLED=false
+      # ---- Session configuration ----
+      - CONFIG_SESSION_PHONE_CLIENT=Evolution API
+      - CONFIG_SESSION_PHONE_NAME=Chrome
+      # ---- QR Code configuration ----
+      - QRCODE_LIMIT=30
+      - QRCODE_COLOR=#198754
+    volumes:
+      - evolution_instances:/evolution/instances
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
