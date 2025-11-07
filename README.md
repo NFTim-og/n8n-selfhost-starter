@@ -23,7 +23,7 @@ Save **$50-110/month** by self-hosting n8n with this production-ready Docker Com
 
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/n8n-selfhost-starter.git
+git clone https://github.com/NFTim-og/n8n-selfhost-starter.git
 cd n8n-selfhost-starter
 
 # Configure environment
@@ -220,8 +220,8 @@ If this project helped you save money and time, please give it a ⭐!
 ## 📞 Support
 
 - 📖 [Documentation](docs/)
-- 🐛 [Issue Tracker](https://github.com/YOUR_USERNAME/n8n-selfhost-starter/issues)
-- 💬 [Discussions](https://github.com/YOUR_USERNAME/n8n-selfhost-starter/discussions)
+- 🐛 [Issue Tracker](https://github.com/NFTim-og/n8n-selfhost-starter/issues)
+- 💬 [Discussions](https://github.com/NFTim-og/n8n-selfhost-starter/discussions)
 
 ---
 

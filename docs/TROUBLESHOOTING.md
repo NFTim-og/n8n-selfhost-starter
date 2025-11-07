@@ -286,7 +286,7 @@ docker-compose logs --tail=100
 - [n8n Community Forum](https://community.n8n.io/)
 - [n8n Documentation](https://docs.n8n.io/)
 - [Evolution API Docs](https://doc.evolution-api.com/)
-- [GitHub Issues](https://github.com/YOUR_USERNAME/n8n-selfhost-starter/issues)
+- [GitHub Issues](https://github.com/NFTim-og/n8n-selfhost-starter/issues)
 
 ## Still Having Issues?
 
