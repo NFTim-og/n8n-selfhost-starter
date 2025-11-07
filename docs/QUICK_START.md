@@ -13,7 +13,7 @@ Get n8n running in 5 minutes with Docker Compose.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/n8n-selfhost-starter.git
+git clone https://github.com/NFTim-og/n8n-selfhost-starter.git
 cd n8n-selfhost-starter
 ```
 
@@ -35,7 +35,7 @@ nano .env
 - `POSTGRES_NON_ROOT_PASSWORD` - n8n database user password
 - `REDIS_PASSWORD` - Redis password
 - `EVOLUTION_API_KEY` - Evolution API key
-- `NGROK_DOMAIN` - Your ngrok domain (optional for local-only)
+- `NGROK_DOMAIN` - Your ngrok domain (optional for local-only, see [ngrok setup](#ngrok-for-external-access) below)
 
 ### 3. Start Services
 
@@ -77,7 +77,7 @@ See [Ubuntu Deployment Guide](UBUNTU_DEPLOYMENT.md) for:
 - 24/7 operation setup
 - Auto-start on boot
 - Health monitoring
-- External access with ngrok
+- External access configuration
 
 ### For WhatsApp Integration
 
@@ -151,13 +151,73 @@ cat .env | grep POSTGRES
 - [Troubleshooting Guide](TROUBLESHOOTING.md)
 - [n8n Documentation](https://docs.n8n.io/)
 
+## ngrok for External Access
+
+### Free Tier (Good for Testing)
+
+ngrok's free tier includes:
+- ✅ 1 static domain
+- ✅ HTTPS support
+- ⚠️ **40 requests/minute limit**
+- ⚠️ Session expires after 2 hours
+
+**Setup:**
+```bash
+# Install ngrok
+brew install ngrok
+
+# Authenticate (get token from https://dashboard.ngrok.com)
+ngrok config add-authtoken YOUR_TOKEN
+
+# Get your free static domain
+ngrok http 5678
+# Copy the domain (e.g., abc123.ngrok-free.dev)
+
+# Add to .env
+NGROK_DOMAIN=abc123.ngrok-free.dev
+```
+
+### Paid Plan ($10/month - Recommended for Production)
+
+**When you need the paid plan:**
+- 🔄 Heavy webhook usage (>40 requests/minute)
+- 📱 WhatsApp automation with frequent messages
+- 🤖 Multiple workflows running simultaneously
+- 🔒 Need persistent sessions (no 2-hour limit)
+- 📊 Production workloads
+
+**Benefits of $10/month plan:**
+- ✅ **500 requests/minute** (12.5x more than free)
+- ✅ **No session timeouts** (24/7 uptime)
+- ✅ 3 static domains
+- ✅ Custom domains support
+- ✅ Better performance
+
+**Cost comparison:**
+- ngrok paid: $10/month
+- n8n cloud: $20-50/month
+- **Total savings: Still $10-40/month!**
+
+**Sign up:** https://dashboard.ngrok.com/billing/subscription
+
+### Alternative: Cloudflare Tunnel (Free)
+
+If you want to avoid ngrok costs entirely:
+- ✅ Completely free
+- ✅ No request limits
+- ✅ Custom domains
+- ⚠️ More complex setup
+
+See: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/
+
 ## Security Note
 
 ⚠️ **Never commit your .env file!** It contains sensitive credentials.
 
 For production use:
 - Use strong passwords (20+ characters)
-- Enable HTTPS
+- Enable HTTPS (ngrok provides this automatically)
 - Configure firewall rules
 - Regular backups
+- Monitor ngrok usage to avoid hitting limits
 

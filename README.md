@@ -17,7 +17,14 @@ Save **$50-110/month** by self-hosting n8n with this production-ready Docker Com
 | WhatsApp API | $15-30 | $0 | $15-30 |
 | PostgreSQL | $10-20 | $0 | $10-20 |
 | Redis | $5-10 | $0 | $5-10 |
-| **Total** | **$50-110** | **$0** | **$50-110** |
+| **Subtotal** | **$50-110** | **$0** | **$50-110** |
+| ngrok (optional)* | - | $0-10 | - |
+| **Total** | **$50-110** | **$0-10** | **$40-110** |
+
+**\*ngrok pricing:**
+- **Free tier:** Good for testing (40 requests/min, 2-hour sessions)
+- **$10/month:** Recommended for production (500 requests/min, 24/7 uptime)
+- **Alternative:** Use Cloudflare Tunnel (free, unlimited) - see [Quick Start Guide](docs/QUICK_START.md#ngrok-for-external-access)
 
 ## ⚡ Quick Start
 
@@ -123,6 +130,7 @@ Perfect for:
 | Guide | Description |
 |-------|-------------|
 | [Quick Start](docs/QUICK_START.md) | Get running in 5 minutes |
+| [ngrok Setup](docs/NGROK_SETUP.md) | External access & pricing guide |
 | [Ubuntu Deployment](docs/UBUNTU_DEPLOYMENT.md) | Production server setup |
 | [Evolution API](docs/EVOLUTION_API_GUIDE.md) | WhatsApp integration |
 | [Troubleshooting](docs/TROUBLESHOOTING.md) | Common issues & solutions |

@@ -128,9 +128,14 @@ curl -X DELETE http://localhost:8080/instance/delete/my-whatsapp \
 
 ### Method 2: External URL (via ngrok)
 
-If calling from outside Docker network:
+If calling from outside Docker network or for webhooks:
 
 - **URL:** `https://YOUR_NGROK_DOMAIN/evolution-api/message/sendText/my-whatsapp`
+
+**⚠️ ngrok Rate Limits:**
+- Free tier: 40 requests/minute (may not be enough for heavy WhatsApp usage)
+- Paid tier ($10/month): 500 requests/minute - **recommended for production**
+- See [Quick Start Guide](QUICK_START.md#ngrok-for-external-access) for details
 
 ## Webhook Configuration
 
